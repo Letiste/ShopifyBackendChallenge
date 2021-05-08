@@ -53,4 +53,9 @@ export default class UsersController {
       response.redirect('/login')
     }
   }
+
+  public async logout({ response, auth }: HttpContextContract) {
+    await auth.logout()
+    response.redirect('/login')
+  }
 }

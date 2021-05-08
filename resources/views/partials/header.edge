@@ -1,0 +1,10 @@
+<header class="header">
+    @if(auth.isLoggedIn)
+    <form action="/logout?_method=DELETE" method="POST">
+    <button type="submit">Logout</button>
+    </form>
+    @else
+    <a href="/login">Signin</a>
+    <a href="/signup">Signup</a>
+    @end
+</header>

@@ -1,0 +1,27 @@
+@layout('layouts/master')
+@set('title', 'Add a new Image')
+
+@section('body')
+<h1> Add a new Image </h1>
+<form action="/images/create" method="post" enctype="multipart/form-data">
+<div>
+  <label for="file">Image :</label>
+  <input type="file" name="file" id="file" accept="image/png, image/jpeg">
+</div>
+
+<div>
+  <label for="name">Name :</label>
+  <input type="text" name="name" id="name">
+</div>
+<div>
+  <label for="price">Price :</label>
+  <input type="number" name="price" id="price">
+</div>
+
+<div>
+  <label for="toSell">To sell ?</label>
+  <input type="checkbox" name="toSell" id="toSell" value="true">
+</div>
+  <button type="submit">Create</button>
+</form>
+@end

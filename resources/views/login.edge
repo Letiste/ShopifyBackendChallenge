@@ -1,0 +1,21 @@
+@layout('layouts/master')
+@set('title', 'Login')
+
+@section('body')
+<h1> Log in </h1>
+@if(flashMessages.has('errors.login'))
+<p class="error"> {{ flashMessages.get('errors.login') }} </p>
+@end
+<form action="/login" method="post">
+<div>
+  <label for="username">Username :</label>
+  <input type="text" name="username" id="username">
+</div>
+<div>
+  <label for="password">Password :</label>
+  <input type="password" name="password" id="password">
+ 
+</div>
+<button type="submit">Log in</button>
+</form>
+@end

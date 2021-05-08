@@ -5,3 +5,5 @@ Route.get('/', async ({ view }) => {
 })
 
 Route.get('/signup', 'UsersController.signup')
+
+Route.post('/signup', 'UsersController.signin')

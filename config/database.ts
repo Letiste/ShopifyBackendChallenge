@@ -37,7 +37,10 @@ const databaseConfig: DatabaseConfig = {
     sqlite: {
       client: 'sqlite',
       connection: {
-        filename: Application.tmpPath('db.sqlite3'),
+        filename:
+          Env.get('NODE_ENV') === 'testing'
+            ? Application.tmpPath('db_test.sqlite3')
+            : Application.tmpPath('db.sqlite3'),
       },
       migrations: {
         naturalSort: true,
@@ -46,8 +49,7 @@ const databaseConfig: DatabaseConfig = {
       healthCheck: false,
       debug: false,
     },
-
-  }
+  },
 }
 
 export default databaseConfig

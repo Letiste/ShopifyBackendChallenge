@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { BaseModel, column, beforeSave } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeSave, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import Image from './Image'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -18,6 +19,9 @@ export default class User extends BaseModel {
       user.password = await Hash.make(user.password)
     }
   }
+
+  @hasMany(() => Image)
+  public images: HasMany<typeof Image>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

@@ -17,3 +17,6 @@ Route.get('/login', 'UsersController.login')
 Route.post('/login', 'UsersController.logging')
 
 Route.delete('/logout', 'UsersController.logout')
+
+Route.get('/images/create', 'ImagesController.create').middleware('auth')
+Route.post('/images/create', 'ImagesController.store').middleware('auth')

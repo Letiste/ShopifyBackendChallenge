@@ -31,13 +31,11 @@ import User from 'App/Models/User'
 | NOTE: Always export the "actions" const from this file
 |****************************************************************
 */
-export const { actions } = Bouncer
-    .define('deleteImage', (user: User, image: Image) => {
-        return user.id === image.userId
-    })
-    .define('editImage', (user: User, image: Image) => {
-        return user.id === image.userId
-    })
+export const { actions } = Bouncer.define('deleteImage', (user: User, image: Image) => {
+  return user.id === image.userId
+}).define('editImage', (user: User, image: Image) => {
+  return user.id === image.userId
+})
 
 /*
 |--------------------------------------------------------------------------

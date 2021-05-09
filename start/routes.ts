@@ -21,7 +21,6 @@ Route.post('/login', 'UsersController.logging')
 Route.delete('/logout', 'UsersController.logout')
 
 Route.group(() => {
-
   Route.get('/images/create', 'ImagesController.create')
 
   Route.post('/images/create', 'ImagesController.store')
@@ -34,5 +33,4 @@ Route.group(() => {
 
   Route.get('/profile', 'UsersController.profile')
   Route.patch('/images/:id/buy', 'UsersController.buy')
-
 }).middleware('auth')

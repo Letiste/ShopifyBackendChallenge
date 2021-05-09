@@ -1,0 +1,48 @@
+name: Lint & test & deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PORT: '3333'
+      HOST: '0.0.0.0'
+      NODE_ENV: 'testing'
+      APP_KEY: 'k5yvN0DOQLmYVMVes2eDianT7qkahSgf'
+      SESSION_DRIVER: 'cookie'
+      CACHE_VIEWS: 'false'
+      DB_CONNECTION: 'sqlite'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Find Node version to install
+        run: |
+          NODE_VERSION=$(sed 's/^v//' .nvmrc)
+          echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
+      - name: Setup NodeJS ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
+            ${{ runner.os }}-node-
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run build
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test

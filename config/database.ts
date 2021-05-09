@@ -39,8 +39,8 @@ const databaseConfig: DatabaseConfig = {
       connection: {
         filename:
           Env.get('NODE_ENV') === 'testing'
-            ? Application.tmpPath('db_test.sqlite3')
-            : Application.tmpPath('db.sqlite3'),
+            ? Application.databasePath('db_test.sqlite3')
+            : Application.databasePath('db.sqlite3'),
       },
       migrations: {
         naturalSort: true,

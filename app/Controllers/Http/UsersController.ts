@@ -68,7 +68,6 @@ export default class UsersController {
   }
 
   public async buy({ params, response, session, auth }: HttpContextContract) {
-
     const { id } = await params
 
     const user = auth.user!
@@ -82,7 +81,9 @@ export default class UsersController {
       return response.redirect('/')
     }
     if (user.balance < image.price) {
-      session.flash('errors', { buy: `Not enough money to buy the image. Current balance: ${user.balance}` })
+      session.flash('errors', {
+        buy: `Not enough money to buy the image. Current balance: ${user.balance}`,
+      })
       return response.redirect('/')
     }
 

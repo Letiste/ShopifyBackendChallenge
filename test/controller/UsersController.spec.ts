@@ -51,10 +51,7 @@ test.group('UsersController: Signin', (group) => {
 
     const cookie = getCookie(header)
 
-    const { text } = await request
-      .get('/signup')
-      .set('Cookie', cookie)
-      .expect(200)
+    const { text } = await request.get('/signup').set('Cookie', cookie).expect(200)
 
     const document = getDocument(text)
     const errors = document.querySelectorAll('.error')
@@ -110,10 +107,7 @@ test.group('UsersController: Logging', (group) => {
 
     const cookie = getCookie(header)
 
-    const { text } = await request
-      .get('/login')
-      .set('Cookie', cookie)
-      .expect(200)
+    const { text } = await request.get('/login').set('Cookie', cookie).expect(200)
 
     const document = getDocument(text)
     const errors = document.querySelectorAll('.error')
@@ -131,10 +125,7 @@ test.group('UsersController: Profile', (group) => {
   test('should render profile if user is logged in', async (assert) => {
     const user = await User.create({ username: 'username', password: 'password' })
     const cookie = await logUser('username', 'password')
-    const { text } = await request
-      .get('/profile')
-      .set('Cookie', cookie)
-      .expect(200)
+    const { text } = await request.get('/profile').set('Cookie', cookie).expect(200)
 
     const document = getDocument(text)
     const title = document.querySelector('h1')
@@ -143,20 +134,18 @@ test.group('UsersController: Profile', (group) => {
   })
 
   test('should redirect to /login if not logged in', async () => {
-    await request
-      .get('/profile')
-      .expect('Location', '/login')
+    await request.get('/profile').expect('Location', '/login')
   })
 })
-
 
 test.group('UsersController: Buy', (group) => {
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
     user = await User.create({ username: 'username', password: 'password', balance: 100 })
-    image = await user.related('images').create({ name: 'Image', price: 12, toSell: false, data: '', extname: 'jpg' })
+    image = await user
+      .related('images')
+      .create({ name: 'Image', price: 12, toSell: false, data: '', extname: 'jpg' })
     cookie = await logUser('username', 'password')
-
   })
   group.afterEach(async () => {
     await Database.rollbackGlobalTransaction()
@@ -197,10 +186,7 @@ test.group('UsersController: Buy', (group) => {
 
     const newCookie = getCookie(header)
 
-    const { text } = await request
-      .get('/')
-      .set('Cookie', newCookie)
-      .expect(200)
+    const { text } = await request.get('/').set('Cookie', newCookie).expect(200)
 
     const document = getDocument(text)
     const errors = document.querySelectorAll('.error')
@@ -222,10 +208,7 @@ test.group('UsersController: Buy', (group) => {
 
     const newCookie = getCookie(header)
 
-    const { text } = await request
-      .get('/')
-      .set('Cookie', newCookie)
-      .expect(200)
+    const { text } = await request.get('/').set('Cookie', newCookie).expect(200)
 
     const document = getDocument(text)
     const errors = document.querySelectorAll('.error')

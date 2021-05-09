@@ -2,7 +2,12 @@
 @set('title', 'Profile')
 
 @section('body')
+<main>
 <h1> Profile of {{user.username}} </h1>
+
+@if(flashMessages.has('success'))
+    <p class="success">{{flashMessages.get('success')}}</p>
+@end
 
 <p>Balance: {{user.balance}}</p>
 
@@ -17,4 +22,6 @@
 </li>
 @end
 </ul>
+
+</main>
 @end

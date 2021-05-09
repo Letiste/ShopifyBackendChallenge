@@ -6,31 +6,35 @@
 @if(flashMessages.has('errors.buy'))
   <p class="error">{{flashMessages.get('errors.buy')}}</p>
 @end
-  <main>
-    <h1>Welcome</h1>
-    <a href="/images/create">Add a new image</a>
+<main>
+<h1>Welcome</h1>
+@if(flashMessages.has('success'))
+  <p class="success">{{flashMessages.get('success')}}</p>
+@end
+<p>Balance: ${{auth.user.balance}}</p>
+<a href="/images/create">Add a new image</a>
 
-    <form action={{route('ImagesController.index')}} method="get">
-      <label for="name">Search images by name: </label>
-    <input type="name" name="name" id="name" placeholder="Cat" value={{name || ''}}>
-    <label for="extname">File extension:</label>
-    <select name="extname" id="extname">
-      <option value="all" {{extname === 'all' && 'selected'}}>all</option>
-      <option value="png"{{extname === 'png' && 'selected'}}>png</option>
-      <option value="jpg"{{extname === 'jpg' && 'selected'}}>jpg</option>
-    </select>
-    <input type="submit" value="Search">
-    </form>
-    <ul>
-    @each(image in images)
+<form action={{route('ImagesController.index')}} method="get">
+  <label for="name">Search images: </label>
+  <input type="search" name="name" id="name" placeholder="Cat" value={{name || ''}}>
+  <label for="extname">File extension:</label>
+  <select name="extname" id="extname">
+    <option value="all" {{extname === 'all' && 'selected'}}>all</option>
+    <option value="png"{{extname === 'png' && 'selected'}}>png</option>
+    <option value="jpg"{{extname === 'jpg' && 'selected'}}>jpg</option>
+  </select>
+  <button type="submit">Search</button>
+</form>
+<ul>
+@each(image in images)
 <li>
-    <img src={{`data:image/${image.extname};base64,`+ image.data}} alt={{image.name}} height=100>
-    {{image.name}}: ${{image.price}}
-    <form action={{route('UsersController.buy', [image.id])+"?_method=patch"}} method="post">
-      <button type="submit">Buy</button>
-    </form>
+  <img src={{`data:image/${image.extname};base64,`+ image.data}} alt={{image.name}} height=100>
+  {{image.name}}: ${{image.price}}
+  <form action={{route('UsersController.buy', [image.id])+"?_method=patch"}} method="post">
+    <button type="submit">Buy</button>
+  </form>
 </li> 
 @end
 </ul>
-  </main>
+</main>
  @end

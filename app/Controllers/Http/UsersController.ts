@@ -4,8 +4,9 @@ import User from 'App/Models/User'
 import Image from '../../Models/Image'
 
 export default class UsersController {
-  public async signup({ view, auth, response }: HttpContextContract) {
+  public async signup({ view, auth, response, session }: HttpContextContract) {
     if (auth.isLoggedIn) {
+      session.flash('success', 'You are signed up !')
       response.redirect('/')
     } else {
       return view.render('signup')
@@ -50,6 +51,7 @@ export default class UsersController {
     try {
       const { username, password } = await request.only(['username', 'password'])
       await auth.attempt(username, password)
+      session.flash('success', 'You are logged in !')
       response.redirect('/')
     } catch (error) {
       const { username } = await request.only(['username'])
@@ -98,6 +100,7 @@ export default class UsersController {
     image.toSell = false
     await image.save()
 
+    session.flash('success', 'You bought the image !')
     return response.redirect('/')
   }
 }

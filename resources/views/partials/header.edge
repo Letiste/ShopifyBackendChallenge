@@ -1,10 +1,16 @@
 <header class="header">
-    @if(auth.isLoggedIn)
-    <form action="/logout?_method=DELETE" method="POST">
-    <button type="submit">Logout</button>
-    </form>
-    @else
-    <a href="/login">Signin</a>
-    <a href="/signup">Signup</a>
-    @end
+@if(auth.isLoggedIn)
+<div>
+  <a href="/">Index</a>
+  <a href="/profile">Profile</a>
+</div>
+<form action="/logout?_method=DELETE" method="POST">
+  <button type="submit">Logout</button>
+</form>
+@else
+<div>
+  <a href="/login">Signin</a>
+  <a href="/signup">Signup</a>
+</div>
+@end
 </header>

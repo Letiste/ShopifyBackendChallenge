@@ -13,6 +13,9 @@ export default class User extends BaseModel {
   @column({ serializeAs: null })
   public password: string
 
+  @column()
+  public balance: number = 100
+
   @beforeSave()
   public static async hashPassword(user: User) {
     if (user.$dirty.password) {

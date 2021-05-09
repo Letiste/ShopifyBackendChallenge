@@ -2,6 +2,10 @@
 @set('title', 'Home page')
 
 @section('body')
+
+@if(flashMessages.has('errors.buy'))
+  <p class="error">{{flashMessages.get('errors.buy')}}</p>
+@end
   <main>
     <h1>Welcome</h1>
     <a href="/images/create">Add a new image</a>
@@ -10,6 +14,9 @@
 <li>
     <img src={{`data:image/${image.extname};base64,`+ image.data}} alt={{image.name}} height=100>
     {{image.name}}: ${{image.price}}
+    <form action={{route('UsersController.buy', [image.id])+"?_method=patch"}} method="post">
+      <button type="submit">Buy</button>
+    </form>
     @can('editImage', auth.user)
     <a href={{route('ImagesController.edit', [image.id])}}>Edit</a>
     @end

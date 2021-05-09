@@ -33,5 +33,6 @@ Route.group(() => {
   Route.delete('/images/:id', 'ImagesController.destroy')
 
   Route.get('/profile', 'UsersController.profile')
+  Route.patch('/images/:id/buy', 'UsersController.buy')
 
 }).middleware('auth')

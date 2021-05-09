@@ -108,14 +108,7 @@ export default class ImagesController {
 }
 
 async function setFile(file: MultipartFileContract): Promise<string> {
-  const rs = fs.createReadStream(file.tmpPath!)
-  const chunks: string[] = []
-  const data: string = await new Promise((resolve, reject) => {
-    rs.on('data', (chunk) => {
-      chunks.push(chunk.toString('base64'))
-    })
-    rs.on('error', (err) => reject(err));
-    rs.on('end', () => resolve(chunks.join('')));
-  })
-  return Buffer.from(data, 'utf-8').toString()
+  const data = fs.readFileSync(file.tmpPath!)
+  return data.toString('base64')
 }
+

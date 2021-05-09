@@ -3,6 +3,9 @@
 
 @section('body')
 <h1> Profile of {{user.username}} </h1>
+
+<p>Balance: {{user.balance}}</p>
+
 <ul>
 @each(image in images)
 <li>

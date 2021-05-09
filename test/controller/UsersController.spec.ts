@@ -1,5 +1,4 @@
 import test from 'japa'
-import { JSDOM } from 'jsdom'
 import supertest from 'supertest'
 import User from 'App/Models/User'
 import Database from '@ioc:Adonis/Lucid/Database'
@@ -55,8 +54,6 @@ test.group('UsersController: Signin', (group) => {
     const document = getDocument(text)
     const errors = document.querySelectorAll('.error')
     assert.equal(errors.length, 2)
-
-
   })
 
   test('should log in if params are valid', async (assert) => {
@@ -119,7 +116,13 @@ test.group('UsersController: Logging', (group) => {
   })
 })
 
-test.group('UsersController: Profile', () => {
+test.group('UsersController: Profile', (group) => {
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
   test('should render profile if user is logged in', async (assert) => {
     const user = await User.create({ username: 'username', password: 'password' })
     const cookie = await logUser('username', 'password')
@@ -128,7 +131,7 @@ test.group('UsersController: Profile', () => {
       .set('Cookie', cookie)
       .expect(200)
 
-    const { document } = new JSDOM(text).window
+    const document = getDocument(text)
     const title = document.querySelector('h1')
     assert.exists(title)
     assert.equal(title!.textContent!.trim(), `Profile of ${user.username}`)

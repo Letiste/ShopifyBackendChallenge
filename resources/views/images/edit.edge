@@ -1,0 +1,37 @@
+@layout('layouts/master')
+@set('title', 'Edit Image')
+
+@section('body')
+<h1> Edit Image </h1>
+<form action={{route('ImagesController.edit', [image.id])+"?_method=patch"}} method="post" enctype="multipart/form-data">
+<div>
+    <label for="file">Image :</label>
+    <img src={{`data:image/${image.extname};base64,`+ image.data}} alt={{image.name}} height=100>
+    <input type="file" name="file" id="file" accept="image/png, image/jpeg" value={{flashMessages.get('file', '')}}>
+    @if(flashMessages.has('errors.file'))
+        <p class="error"> {{ flashMessages.get('errors.file') }} </p>
+    @end
+</div>
+
+<div>
+  <label for="name">Name :</label>
+  <input type="text" name="name" id="name" value={{flashMessages.get('name', image.name)}}>
+  @if(flashMessages.has('errors.name'))
+    <p class="error"> {{ flashMessages.get('errors.name') }} </p>
+  @end
+</div>
+<div>
+  <label for="price">Price :</label>
+  <input type="number" name="price" id="price" value={{flashMessages.get('price', image.price)}}>
+  @if(flashMessages.has('errors.price'))
+  <p class="error"> {{ flashMessages.get('errors.price') }} </p>
+@end
+</div>
+
+<div>
+  <label for="toSell">To sell ?</label>
+  <input type="checkbox" name="toSell" id="toSell" {{flashMessages.get('toSell', image.toSell) && 'checked' }}>
+</div>
+  <button type="submit">Update</button>
+</form>
+@end

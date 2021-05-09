@@ -18,10 +18,18 @@ Route.post('/login', 'UsersController.logging')
 
 Route.delete('/logout', 'UsersController.logout')
 
-Route.get('/images/create', 'ImagesController.create').middleware('auth')
+Route.group(() => {
 
-Route.post('/images/create', 'ImagesController.store').middleware('auth')
+  Route.get('/images/create', 'ImagesController.create')
 
-Route.delete('/images/:id', 'ImagesController.destroy')
+  Route.post('/images/create', 'ImagesController.store')
 
-Route.get('/profile', 'UsersController.profile').middleware('auth')
+  Route.get('/images/:id/edit', 'ImagesController.edit')
+
+  Route.patch('/images/:id/edit', 'ImagesController.update')
+
+  Route.delete('/images/:id', 'ImagesController.destroy')
+
+  Route.get('/profile', 'UsersController.profile')
+
+}).middleware('auth')

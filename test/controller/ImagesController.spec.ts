@@ -1,7 +1,6 @@
-import Database from '@ioc:Adonis/Lucid/Database'
 import test from 'japa'
-import { JSDOM } from 'jsdom'
 import supertest from 'supertest'
+import Database from '@ioc:Adonis/Lucid/Database'
 import User from '../../app/Models/User'
 import { logUser, getCookie, getDocument } from '../helpers/'
 import path from 'path'

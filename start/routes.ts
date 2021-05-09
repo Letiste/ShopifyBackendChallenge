@@ -1,8 +1,10 @@
 import Route from '@ioc:Adonis/Core/Route'
+import Image from '../app/Models/Image'
 
 Route.get('/', async ({ view, auth, response }) => {
   if (auth.isLoggedIn) {
-    return view.render('welcome')
+    const images = await Image.query().select('*').where('to_sell', true)
+    return view.render('welcome', { images })
   } else {
     response.redirect('/login')
   }

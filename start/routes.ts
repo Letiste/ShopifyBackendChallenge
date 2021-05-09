@@ -1,15 +1,6 @@
 import Route from '@ioc:Adonis/Core/Route'
 import Image from '../app/Models/Image'
 
-Route.get('/', async ({ view, auth, response }) => {
-  if (auth.isLoggedIn) {
-    const images = await Image.query().select('*').where('to_sell', true)
-    return view.render('welcome', { images })
-  } else {
-    response.redirect('/login')
-  }
-})
-
 Route.get('/signup', 'UsersController.signup')
 
 Route.post('/signup', 'UsersController.signin')
@@ -21,6 +12,8 @@ Route.post('/login', 'UsersController.logging')
 Route.delete('/logout', 'UsersController.logout')
 
 Route.group(() => {
+  Route.get('/', 'ImagesController.index')
+
   Route.get('/images/create', 'ImagesController.create')
 
   Route.post('/images/create', 'ImagesController.store')

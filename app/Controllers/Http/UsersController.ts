@@ -31,6 +31,8 @@ export default class UsersController {
       await auth.login(user)
       response.redirect('/')
     } catch (error) {
+      const { username } = await request.only(['username'])
+      session.flash('username', username)
       session.flash('errors', error.messages)
       response.redirect('/signup')
     }
@@ -50,6 +52,8 @@ export default class UsersController {
       await auth.attempt(username, password)
       response.redirect('/')
     } catch (error) {
+      const { username } = await request.only(['username'])
+      session.flash('username', username)
       session.flash('errors', { login: 'Username or Password incorrect' })
       response.redirect('/login')
     }

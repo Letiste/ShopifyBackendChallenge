@@ -6,7 +6,7 @@
 <form action="/signup" method="post">
 <div>
   <label for="username">Username :</label>
-  <input type="text" name="username" id="username">
+  <input type="text" name="username" id="username" value={{flashMessages.get('username', '')}}>
   @if(flashMessages.has('errors.username'))
   <p class="error"> {{ flashMessages.get('errors.username') }} </p>
   @end

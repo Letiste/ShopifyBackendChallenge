@@ -5,9 +5,14 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import { isLoggedIn } from '../helpers/isLoggedIn'
 import { logUser } from '../helpers/logUser'
 import { getCookie, getDocument } from '../helpers'
+import Image from '../../app/Models/Image'
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 const request = supertest(BASE_URL)
+
+let user: User
+let image: Image
+let cookie: string[]
 
 test.group('UsersController: Signup', () => {
   test('ensure signup page works', async (assert) => {
@@ -141,5 +146,90 @@ test.group('UsersController: Profile', (group) => {
     await request
       .get('/profile')
       .expect('Location', '/login')
+  })
+})
+
+
+test.group('UsersController: Buy', (group) => {
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+    user = await User.create({ username: 'username', password: 'password', balance: 100 })
+    image = await user.related('images').create({ name: 'Image', price: 12, toSell: false, data: '', extname: 'jpg' })
+    cookie = await logUser('username', 'password')
+
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
+
+  test('should buy image if user has enough money', async (assert) => {
+    image.toSell = true
+    image.userId = user.id + 1
+    await image.save()
+
+    await request
+      .patch(`/images/${image.id}/buy`)
+      .set('Cookie', cookie)
+      .expect(302)
+      .expect('Location', '/')
+
+    const userAfterBuy = await User.find(user.id)
+    const imageAfterBuy = await Image.find(image.id)
+    assert.equal(userAfterBuy!.balance, user.balance - image.price)
+    assert.equal(imageAfterBuy!.userId, userAfterBuy!.id)
+    assert.isFalse(!!imageAfterBuy!.toSell)
+  })
+
+  test('should send 404 if no image found', async () => {
+    const lastId = (await Image.all).length
+    await request
+      .patch(`/images/${lastId + 1}/buy`)
+      .set('Cookie', cookie)
+      .expect(404)
+  })
+
+  test('should show error if image not to sell', async (assert) => {
+    const { header } = await request
+      .patch(`/images/${image.id}/buy`)
+      .set('Cookie', cookie)
+      .expect(302)
+      .expect('Location', '/')
+
+    const newCookie = getCookie(header)
+
+    const { text } = await request
+      .get('/')
+      .set('Cookie', newCookie)
+      .expect(200)
+
+    const document = getDocument(text)
+    const errors = document.querySelectorAll('.error')
+    assert.equal(errors.length, 1)
+    assert.isTrue(errors[0].textContent!.includes('not to sell'))
+  })
+
+  test('should show error if user has not enough money', async (assert) => {
+    user.balance = 0
+    await user.save()
+
+    image.toSell = true
+    await image.save()
+    const { header } = await request
+      .patch(`/images/${image.id}/buy`)
+      .set('Cookie', cookie)
+      .expect(302)
+      .expect('Location', '/')
+
+    const newCookie = getCookie(header)
+
+    const { text } = await request
+      .get('/')
+      .set('Cookie', newCookie)
+      .expect(200)
+
+    const document = getDocument(text)
+    const errors = document.querySelectorAll('.error')
+    assert.equal(errors.length, 1)
+    assert.isTrue(errors[0].textContent!.includes('Not enough money'))
   })
 })

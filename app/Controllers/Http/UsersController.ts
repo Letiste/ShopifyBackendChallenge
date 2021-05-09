@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
+import Image from '../../Models/Image'
 
 export default class UsersController {
   public async signup({ view, auth, response }: HttpContextContract) {
@@ -64,5 +65,34 @@ export default class UsersController {
 
     const images = await user.related('images').query()
     return view.render('profile', { user, images })
+  }
+
+  public async buy({ params, response, session, auth }: HttpContextContract) {
+
+    const { id } = await params
+
+    const user = auth.user!
+    const image = await Image.find(id)
+    if (!image) {
+      return response.status(404)
+    }
+
+    if (!image.toSell) {
+      session.flash('errors', { buy: 'This image is not to sell' })
+      return response.redirect('/')
+    }
+    if (user.balance < image.price) {
+      session.flash('errors', { buy: `Not enough money to buy the image. Current balance: ${user.balance}` })
+      return response.redirect('/')
+    }
+
+    user.balance -= image.price
+    await user.save()
+
+    image.userId = user.id
+    image.toSell = false
+    await image.save()
+
+    return response.redirect('/')
   }
 }

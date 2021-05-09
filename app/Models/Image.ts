@@ -16,6 +16,12 @@ export default class Image extends BaseModel {
   public toSell: boolean = false
 
   @column()
+  public data: string
+
+  @column()
+  public extname: string
+
+  @column()
   public userId: number
 
   @belongsTo(() => User)

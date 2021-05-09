@@ -7,15 +7,24 @@
 <div>
   <label for="file">Image :</label>
   <input type="file" name="file" id="file" accept="image/png, image/jpeg">
+  @if(flashMessages.has('errors.file'))
+    <p class="error"> {{ flashMessages.get('errors.file') }} </p>
+  @end
 </div>
 
 <div>
   <label for="name">Name :</label>
   <input type="text" name="name" id="name">
+  @if(flashMessages.has('errors.name'))
+    <p class="error"> {{ flashMessages.get('errors.name') }} </p>
+  @end
 </div>
 <div>
   <label for="price">Price :</label>
   <input type="number" name="price" id="price">
+  @if(flashMessages.has('errors.price'))
+  <p class="error"> {{ flashMessages.get('errors.price') }} </p>
+@end
 </div>
 
 <div>

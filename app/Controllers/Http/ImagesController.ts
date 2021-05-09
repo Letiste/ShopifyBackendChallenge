@@ -1,6 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import Application from '@ioc:Adonis/Core/Application'
+import fs from 'fs'
 
 export default class ImagesController {
   public async index({ }: HttpContextContract) {
@@ -14,6 +14,7 @@ export default class ImagesController {
     const newStoreSchema = schema.create({
       file: schema.file({ extnames: ['jpg', 'png'], size: '2mb' }),
       name: schema.string({ trim: true }),
+      // TODO: find solution to use Infinity instead of a big number
       price: schema.number([rules.range(0, 9999999999)]),
       toSell: schema.boolean.optional()
     })
@@ -25,10 +26,20 @@ export default class ImagesController {
         },
       })
       const user = await auth.user!
-      const image = await user.related('images').create({ name, price, toSell: toSell || false })
-      const fileName = `${user.id}-${image.id}`
-      await file.move(Application.tmpPath('uploads'), { name: fileName })
-      response.redirect('/')
+      const rs = fs.createReadStream(file.tmpPath!)
+      const chunks: string[] = []
+      let data = ""
+      const promise = new Promise((resolve, reject) => {
+        rs.on('data', (chunk) => {
+          chunks.push(chunk.toString('base64'))
+        })
+        rs.on('error', (err) => reject(err));
+        rs.on('end', () => resolve(chunks.join('')));
+      })
+      data = await promise as string
+      const extname = file.extname!
+      await user.related('images').create({ name, price, toSell: toSell || false, data, extname })
+      response.redirect('/profile')
     } catch (error) {
       session.flash('errors', error.messages)
       response.redirect('/images/create')

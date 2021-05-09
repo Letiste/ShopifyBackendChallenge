@@ -58,4 +58,11 @@ export default class UsersController {
     await auth.logout()
     response.redirect('/login')
   }
+
+  public async profile({ auth, view }: HttpContextContract) {
+    const user = auth.user!
+
+    const images = await user.related('images').query()
+    return view.render('profile', { user, images })
+  }
 }

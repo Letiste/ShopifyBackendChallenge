@@ -5,6 +5,22 @@ import Image from 'App/Models/Image'
 import fs from 'fs'
 
 export default class ImagesController {
+  public async index({ request, view }: HttpContextContract) {
+    let { name, extname } = await request.all()
+    name ||= ''
+    extname ||= 'all'
+    let format = [extname]
+    if (extname === 'all') {
+      format = ['png', 'jpg']
+    }
+    const images = await Image.query()
+      .select('*')
+      .where('to_sell', true)
+      .andWhere('name', 'like', `%${name}%`)
+      .andWhereIn('extname', format)
+    return view.render('welcome', { images, name, extname })
+  }
+
   public async create({ view }: HttpContextContract) {
     return view.render('images/create')
   }

@@ -12,6 +12,72 @@ let user: User
 let image: Image
 let cookie: string[]
 
+test.group('ImagesController: Index', (group) => {
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+    user = await User.create({ username: 'username', password: 'password' })
+    image = await user
+      .related('images')
+      .create({ name: 'Image', price: 12, toSell: false, data: '', extname: 'jpg' })
+    cookie = await logUser('username', 'password')
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
+  test('ensure index page works', async (assert) => {
+    const { text } = await request.get('').set('Cookie', cookie).expect(200)
+
+    const document = getDocument(text)
+    const title = document.querySelector('h1')
+    assert.exists(title)
+    assert.equal(title!.textContent!.trim(), 'Welcome')
+  })
+
+  test('should redirect to /login if not logged in', async () => {
+    await request.get('/').expect(302).expect('Location', '/login')
+  })
+
+  test('should show image on sell', async (assert) => {
+    const { text } = await request.get('/').set('Cookie', cookie).expect(200)
+
+    const document = getDocument(text)
+    const images = document.querySelectorAll('li')
+    assert.equal(images.length, 0)
+
+    image.toSell = true
+    await image.save()
+
+    const { text: newText } = await request.get('/').set('Cookie', cookie).expect(200)
+
+    const newDocument = getDocument(newText)
+    const newImages = newDocument.querySelectorAll('li')
+    assert.equal(newImages.length, 1)
+  })
+
+  test('should show searched image', async (assert) => {
+    image.toSell = true
+    await image.save()
+    await user
+      .related('images')
+      .create({ name: 'Image', price: 12, toSell: true, data: '', extname: 'png' })
+
+    const { text } = await request.get('/').set('Cookie', cookie).expect(200)
+
+    const document = getDocument(text)
+    const images = document.querySelectorAll('li')
+    assert.equal(images.length, 2)
+
+    const { text: newText } = await request
+      .get('/?name=Im&extname=png')
+      .set('Cookie', cookie)
+      .expect(200)
+
+    const newDocument = getDocument(newText)
+    const newImages = newDocument.querySelectorAll('li')
+    assert.equal(newImages.length, 1)
+  })
+})
+
 test.group('ImagesController: Create', async (group) => {
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()

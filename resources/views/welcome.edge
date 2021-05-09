@@ -9,6 +9,18 @@
   <main>
     <h1>Welcome</h1>
     <a href="/images/create">Add a new image</a>
+
+    <form action={{route('ImagesController.index')}} method="get">
+      <label for="name">Search images by name: </label>
+    <input type="name" name="name" id="name" placeholder="Cat" value={{name || ''}}>
+    <label for="extname">File extension:</label>
+    <select name="extname" id="extname">
+      <option value="all" {{extname === 'all' && 'selected'}}>all</option>
+      <option value="png"{{extname === 'png' && 'selected'}}>png</option>
+      <option value="jpg"{{extname === 'jpg' && 'selected'}}>jpg</option>
+    </select>
+    <input type="submit" value="Search">
+    </form>
     <ul>
     @each(image in images)
 <li>
@@ -17,14 +29,6 @@
     <form action={{route('UsersController.buy', [image.id])+"?_method=patch"}} method="post">
       <button type="submit">Buy</button>
     </form>
-    @can('editImage', auth.user)
-    <a href={{route('ImagesController.edit', [image.id])}}>Edit</a>
-    @end
-    @can('deleteImage', auth.user)
-    <form action={{route('ImagesController.destroy', [image.id])+"?_method=delete"}} method="post">
-      <button type="submit">Delete</button>
-    </form>
-    @end
 </li> 
 @end
 </ul>

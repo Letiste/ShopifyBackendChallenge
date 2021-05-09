@@ -14,13 +14,25 @@ let user: User
 let image: Image
 let cookie: string[]
 
-test.group('UsersController: Signup', () => {
+test.group('UsersController: Signup', (group) => {
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
   test('ensure signup page works', async (assert) => {
     const { text } = await request.get('/signup').expect(200)
     const document = getDocument(text)
     const title = document.querySelector('h1')
     assert.exists(title)
     assert.equal(title!.textContent!.trim(), 'Sign up')
+  })
+
+  test('if user logged in should redirect to /', async () => {
+    await User.create({ username: 'username', password: 'password' })
+    const cookie = await logUser('username', 'password')
+    await request.get('/signup').set('Cookie', cookie).expect(302).expect('Location', '/')
   })
 })
 
@@ -69,13 +81,25 @@ test.group('UsersController: Signin', (group) => {
   })
 })
 
-test.group('UsersController: Login', () => {
+test.group('UsersController: Login', (group) => {
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
   test('ensure login page works', async (assert) => {
     const { text } = await request.get('/login').expect(200)
     const document = getDocument(text)
     const title = document.querySelector('h1')
     assert.exists(title)
     assert.equal(title!.textContent!.trim(), 'Log in')
+  })
+
+  test('if user logged in should redirect to /', async () => {
+    await User.create({ username: 'username', password: 'password' })
+    const cookie = await logUser('username', 'password')
+    await request.get('/login').set('Cookie', cookie).expect(302).expect('Location', '/')
   })
 })
 
@@ -93,7 +117,6 @@ test.group('UsersController: Logging', (group) => {
       .send({ username: 'username', password: 'password' })
       .expect(302)
       .expect('Location', '/')
-
     assert.isTrue(isLoggedIn(header))
   })
 
@@ -112,6 +135,30 @@ test.group('UsersController: Logging', (group) => {
     const document = getDocument(text)
     const errors = document.querySelectorAll('.error')
     assert.equal(errors.length, 1)
+  })
+})
+
+test.group('UsersController: Logout', (group) => {
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
+  test('should log out if user logged in', async () => {
+    await User.create({ username: 'username', password: 'password' })
+    const cookie = await logUser('username', 'password')
+    const { header } = await request
+      .delete('/logout')
+      .set('Cookie', cookie)
+      .expect(302)
+      .expect('Location', '/login')
+    const newCookie = getCookie(header)
+    await request.get('/').set('Cookie', newCookie).expect(302).expect('Location', '/login')
+  })
+
+  test('should redirect to /login if user not logged in', async () => {
+    await request.delete('/logout').expect(302).expect('Location', '/login')
   })
 })
 

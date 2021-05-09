@@ -5,8 +5,6 @@ import Image from 'App/Models/Image'
 import fs from 'fs'
 
 export default class ImagesController {
-  public async index({}: HttpContextContract) {}
-
   public async create({ view }: HttpContextContract) {
     return view.render('images/create')
   }
@@ -36,8 +34,6 @@ export default class ImagesController {
       response.redirect('/images/create')
     }
   }
-
-  public async show({}: HttpContextContract) {}
 
   public async edit({ params, view, response, bouncer }: HttpContextContract) {
     const { id } = params
@@ -99,8 +95,8 @@ export default class ImagesController {
     if (image) {
       await bouncer.authorize('deleteImage', image)
       image.delete()
-      response.redirect('/profile')
     }
+    response.redirect('/profile')
   }
 }
 

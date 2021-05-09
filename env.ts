@@ -16,10 +16,10 @@ import Env from '@ioc:Adonis/Core/Env'
 
 export default Env.rules({
   HOST:
-    Env.get('NODE_ENV') === 'production'
+    process.env.NODE_ENV === 'production'
       ? Env.schema.string.optional({ format: 'host' })
       : Env.schema.string({ format: 'host' }),
-  PORT: Env.get('NODE_ENV') === 'production' ? Env.schema.number.optional() : Env.schema.number(),
+  PORT: process.env.NODE_ENV === 'production' ? Env.schema.number.optional() : Env.schema.number(),
   APP_KEY: Env.schema.string(),
   APP_NAME: Env.schema.string(),
   CACHE_VIEWS: Env.schema.boolean(),

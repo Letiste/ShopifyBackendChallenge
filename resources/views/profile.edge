@@ -1,0 +1,14 @@
+@layout('layouts/master')
+@set('title', 'Profile')
+
+@section('body')
+<h1> Profile of {{user.username}} </h1>
+<ul>
+@each(image in images)
+<li>
+    <img src={{`data:image/${image.extname};base64,`+ image.data}} alt={{image.name}} height=100>
+    {{image.name}}: ${{image.price}}
+</li>
+@end
+</ul>
+@end

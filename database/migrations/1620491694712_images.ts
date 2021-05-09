@@ -9,6 +9,8 @@ export default class Images extends BaseSchema {
       table.string('name').notNullable()
       table.float('price', 2).notNullable()
       table.boolean('to_sell').defaultTo(false).notNullable()
+      table.text('data').notNullable()
+      table.string('extname').notNullable()
       table.integer('user_id').unsigned().references('users.id').onDelete('CASCADE').notNullable()
       table.timestamps(true)
     })

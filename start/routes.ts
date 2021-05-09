@@ -1,5 +1,4 @@
 import Route from '@ioc:Adonis/Core/Route'
-import Image from '../app/Models/Image'
 
 Route.get('/signup', 'UsersController.signup')
 

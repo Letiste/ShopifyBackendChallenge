@@ -2,29 +2,31 @@
 @set('title', 'Signup')
 
 @section('body')
+<main>
 <h1> Sign up </h1>
 <form action="/signup" method="post">
-<div>
-  <label for="username">Username :</label>
-  <input type="text" name="username" id="username" value={{flashMessages.get('username', '')}}>
-  @if(flashMessages.has('errors.username'))
-  <p class="error"> {{ flashMessages.get('errors.username') }} </p>
-  @end
-</div>
-<div>
-  <label for="password">Password :</label>
-  <input type="password" name="password" id="password">
-  @if(flashMessages.has('errors.password'))
-  <p class="error"> {{ flashMessages.get('errors.password') }} </p>
-  @end
-</div>
-<div>
-  <label for="password_confirmation">Password confirmation :</label>
-  <input type="password" name="password_confirmation" id="password_confirmation">
-  @if(flashMessages.has('errors.password_confirmation'))
-  <p class="error"> {{ flashMessages.get('errors.password_confirmation') }} </p>
-  @end
-</div>
-<button type="submit">Register</button>
+  <div>
+    <label for="username">Username :</label>
+    <input type="text" name="username" id="username" value={{flashMessages.get('username', '')}}>
+    @if(flashMessages.has('errors.username'))
+      <p class="error"> {{ flashMessages.get('errors.username') }} </p>
+    @end
+  </div>
+  <div>
+    <label for="password">Password :</label>
+    <input type="password" name="password" id="password">
+    @if(flashMessages.has('errors.password'))
+      <p class="error"> {{ flashMessages.get('errors.password') }} </p>
+    @end
+  </div>
+  <div>
+    <label for="password_confirmation">Confirmation :</label>
+    <input type="password" name="password_confirmation" id="password_confirmation">
+    @if(flashMessages.has('errors.password_confirmation'))
+      <p class="error"> {{ flashMessages.get('errors.password_confirmation') }} </p>
+    @end
+  </div>
+  <button type="submit">Register</button>
 </form>
+</main>
 @end

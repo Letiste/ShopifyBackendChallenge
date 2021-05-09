@@ -44,6 +44,8 @@ export default class ImagesController {
       const data = await setFile(file)
       const extname = file.extname!
       await user.related('images').create({ name, price, toSell: toSell || false, data, extname })
+
+      session.flash('success', 'Image added !')
       response.redirect('/profile')
     } catch (error) {
       session.flash('errors', error.messages)
@@ -96,6 +98,7 @@ export default class ImagesController {
 
       await image.save()
 
+      session.flash('success', 'Image edited !')
       response.redirect('/profile')
     } catch (error) {
       session.flash('errors', error.messages)
@@ -103,7 +106,7 @@ export default class ImagesController {
     }
   }
 
-  public async destroy({ params, response, bouncer }: HttpContextContract) {
+  public async destroy({ params, response, bouncer, session }: HttpContextContract) {
     const { id } = params
 
     const image = await Image.find(id)
@@ -112,6 +115,7 @@ export default class ImagesController {
       await bouncer.authorize('deleteImage', image)
       image.delete()
     }
+    session.flash('success', 'Image deleted !')
     response.redirect('/profile')
   }
 }

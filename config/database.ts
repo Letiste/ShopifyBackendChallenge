@@ -6,8 +6,8 @@
  */
 
 import Env from '@ioc:Adonis/Core/Env'
-import Application from '@ioc:Adonis/Core/Application'
 import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
+import path from 'path'
 
 const databaseConfig: DatabaseConfig = {
   /*
@@ -39,8 +39,8 @@ const databaseConfig: DatabaseConfig = {
       connection: {
         filename:
           Env.get('NODE_ENV') === 'testing'
-            ? Application.databasePath('db_test.sqlite3')
-            : Application.databasePath('db.sqlite3'),
+            ? path.join(__dirname, '../database/db_test.sqlite3')
+            : path.join(__dirname, '../database/db.sqlite3'),
       },
       migrations: {
         naturalSort: true,

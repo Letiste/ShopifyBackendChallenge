@@ -169,7 +169,6 @@ test.group('ImagesController: Update', (group) => {
   })
 })
 
-
 test.group('ImagesController: Destroy', async (group) => {
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
@@ -185,7 +184,11 @@ test.group('ImagesController: Destroy', async (group) => {
 
   test('should delete image if image found and redirect to /profile', async (assert) => {
     const imagesBefore = (await Image.all()).length
-    await request.delete(`/images/${image.id}`).set('Cookie', cookie).expect(302).expect('Location', '/profile')
+    await request
+      .delete(`/images/${image.id}`)
+      .set('Cookie', cookie)
+      .expect(302)
+      .expect('Location', '/profile')
 
     const imagesAfter = (await Image.all()).length
     assert.equal(imagesAfter - imagesBefore, -1)
@@ -199,7 +202,10 @@ test.group('ImagesController: Destroy', async (group) => {
 
   test('should redirect to /profile when image not found', async () => {
     const lastId = (await Image.all()).length
-    await request.delete(`/images/${lastId + 1}`).set('Cookie', cookie).expect(302).expect('Location', '/profile')
+    await request
+      .delete(`/images/${lastId + 1}`)
+      .set('Cookie', cookie)
+      .expect(302)
+      .expect('Location', '/profile')
   })
-
 })

@@ -1,11 +1,8 @@
 {
-    "all": true,
-    "include": [
-        "app/Controllers/**/*.ts",
-        "app/Models/**/*.ts"
-    ],
-    "check-coverage": true,
-    "lines": 80,
-    "functions": 80,
-    "statements": 80
+  "all": true,
+  "include": ["app/Controllers/**/*.ts", "app/Models/**/*.ts"],
+  "check-coverage": true,
+  "lines": 80,
+  "functions": 80,
+  "statements": 80
 }

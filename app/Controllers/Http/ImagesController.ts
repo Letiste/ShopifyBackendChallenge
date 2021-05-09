@@ -1,13 +1,10 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import { MultipartFileContract } from "@ioc:Adonis/Core/BodyParser";
+import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
 import Image from 'App/Models/Image'
 import fs from 'fs'
 
 export default class ImagesController {
-  public async index({ }: HttpContextContract) {
-  }
-
   public async create({ view }: HttpContextContract) {
     return view.render('images/create')
   }
@@ -18,7 +15,7 @@ export default class ImagesController {
       name: schema.string({ trim: true }),
       // TODO: find solution to use Infinity instead of a big number
       price: schema.number([rules.range(0, 9999999999)]),
-      toSell: schema.boolean.optional()
+      toSell: schema.boolean.optional(),
     })
     try {
       const { file, name, price, toSell } = await request.validate({
@@ -36,9 +33,6 @@ export default class ImagesController {
       session.flash('errors', error.messages)
       response.redirect('/images/create')
     }
-  }
-
-  public async show({ }: HttpContextContract) {
   }
 
   public async edit({ params, view, response, bouncer }: HttpContextContract) {
@@ -66,11 +60,12 @@ export default class ImagesController {
         name: schema.string({ trim: true }),
         // TODO: find solution to use Infinity instead of a big number
         price: schema.number([rules.range(0, 9999999999)]),
-        toSell: schema.boolean.optional()
+        toSell: schema.boolean.optional(),
       })
 
       const { file, name, price, toSell } = await request.validate({
-        schema: newUpdateSchema, messages: {
+        schema: newUpdateSchema,
+        messages: {
           required: 'The {{ field }} is required to create a new image',
         },
       })
@@ -86,7 +81,6 @@ export default class ImagesController {
       await image.save()
 
       response.redirect('/profile')
-
     } catch (error) {
       session.flash('errors', error.messages)
       response.redirect(`/images/${id}/edit`)
@@ -101,9 +95,8 @@ export default class ImagesController {
     if (image) {
       await bouncer.authorize('deleteImage', image)
       image.delete()
-      response.redirect('/profile')
     }
-
+    response.redirect('/profile')
   }
 }
 
@@ -111,4 +104,3 @@ async function setFile(file: MultipartFileContract): Promise<string> {
   const data = fs.readFileSync(file.tmpPath!)
   return data.toString('base64')
 }
-

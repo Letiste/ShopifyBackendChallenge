@@ -13,56 +13,44 @@ let image: Image
 let cookie: string[]
 
 test.group('Welcome Page', (group) => {
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+    user = await User.create({ username: 'username', password: 'password' })
+    image = await user
+      .related('images')
+      .create({ name: 'Image', price: 12, toSell: false, data: '', extname: 'jpg' })
+    cookie = await logUser('username', 'password')
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
+  test('ensure welcome page works', async (assert) => {
+    const { text } = await request.get('').set('Cookie', cookie).expect(200)
 
-    group.beforeEach(async () => {
-        await Database.beginGlobalTransaction()
-        user = await User.create({ username: 'username', password: 'password' })
-        image = await user.related('images').create({ name: 'Image', price: 12, toSell: false, data: '', extname: 'jpg' })
-        cookie = await logUser('username', 'password')
+    const document = getDocument(text)
+    const title = document.querySelector('h1')
+    assert.exists(title)
+    assert.equal(title!.textContent!.trim(), 'Welcome')
+  })
 
-    })
-    group.afterEach(async () => {
-        await Database.rollbackGlobalTransaction()
-    })
-    test('ensure welcome page works', async (assert) => {
-        const { text } = await request
-            .get('')
-            .set('Cookie', cookie)
-            .expect(200)
+  test('should redirect to /login if not logged in', async () => {
+    await request.get('/').expect(302).expect('Location', '/login')
+  })
 
-        const document = getDocument(text)
-        const title = document.querySelector('h1')
-        assert.exists(title)
-        assert.equal(title!.textContent!.trim(), 'Welcome')
-    })
+  test('should show image on sell', async (assert) => {
+    const { text } = await request.get('/').set('Cookie', cookie).expect(200)
 
-    test('should redirect to /login if not logged in', async () => {
-        await request
-            .get('/')
-            .expect(302)
-            .expect('Location', '/login')
-    })
+    const document = getDocument(text)
+    const images = document.querySelectorAll('li')
+    assert.equal(images.length, 0)
 
-    test('should show image on sell', async (assert) => {
-        const { text } = await request
-            .get('/')
-            .set('Cookie', cookie)
-            .expect(200)
+    image.toSell = true
+    await image.save()
 
-        const document = getDocument(text)
-        const images = document.querySelectorAll('li')
-        assert.equal(images.length, 0)
+    const { text: newText } = await request.get('/').set('Cookie', cookie).expect(200)
 
-        image.toSell = true
-        await image.save()
-
-        const { text: newText } = await request
-            .get('/')
-            .set('Cookie', cookie)
-            .expect(200)
-
-        const newDocument = getDocument(newText)
-        const newImages = newDocument.querySelectorAll('li')
-        assert.equal(newImages.length, 1)
-    })
+    const newDocument = getDocument(newText)
+    const newImages = newDocument.querySelectorAll('li')
+    assert.equal(newImages.length, 1)
+  })
 })

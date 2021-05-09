@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import Image from 'App/Models/Image'
 import fs from 'fs'
 
 export default class ImagesController {
@@ -55,6 +56,16 @@ export default class ImagesController {
   public async update({ }: HttpContextContract) {
   }
 
-  public async destroy({ }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
+    const { id } = params
+
+    const image = await Image.find(id)
+
+    if (image) {
+      await bouncer.authorize('deleteImage', image)
+      image.delete()
+      response.redirect('/profile')
+    }
+
   }
 }

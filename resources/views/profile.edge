@@ -8,6 +8,8 @@
 <li>
     <img src={{`data:image/${image.extname};base64,`+ image.data}} alt={{image.name}} height=100>
     {{image.name}}: ${{image.price}}
+    <form action={{route('ImagesController.destroy', [image.id])+"?_method=delete"}} method="post">
+    <button type="submit">Delete</button></form>
 </li>
 @end
 </ul>

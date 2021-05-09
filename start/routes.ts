@@ -22,4 +22,6 @@ Route.get('/images/create', 'ImagesController.create').middleware('auth')
 
 Route.post('/images/create', 'ImagesController.store').middleware('auth')
 
+Route.delete('/images/:id', 'ImagesController.destroy')
+
 Route.get('/profile', 'UsersController.profile').middleware('auth')
